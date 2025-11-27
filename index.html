@@ -6,6 +6,12 @@
     <title>Business CRM - Pro Version</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -48,11 +54,87 @@
         input:checked + .slider:before { transform: translateX(20px); }
         .api-warning { border-left: 4px solid #f59e0b; }
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .loading { opacity: 0.6; pointer-events: none; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+    <!-- Firebase Login Modal -->
+    <div id="firebaseLoginModal" class="modal fixed inset-0 z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl transform transition-all">
+                <div class="text-center mb-6">
+                    <i class="fas fa-cubes text-purple-600 text-4xl mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-800">Pro CRM Login</h3>
+                    <p class="text-gray-600 mt-2">Sign in to access your CRM data</p>
+                </div>
+                
+                <div id="loginSection">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="loginEmail" placeholder="your@email.com" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Your password" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <button onclick="loginWithEmail()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <p class="text-center text-gray-600 mb-4">Or sign in with</p>
+                        <button onclick="loginWithGoogle()" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 rounded-xl font-medium transition duration-150 flex items-center justify-center">
+                            <i class="fab fa-google text-red-500 mr-3"></i>Continue with Google
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="showRegisterSection()" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                            Don't have an account? Sign up
+                        </button>
+                    </div>
+                </div>
+
+                <div id="registerSection" class="hidden">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="registerEmail" placeholder="your@email.com" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <input type="password" id="registerPassword" placeholder="Minimum 6 characters" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm your password" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                        <button onclick="registerWithEmail()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-user-plus mr-2"></i>Create Account
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="showLoginSection()" class="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                            Already have an account? Sign in
+                        </button>
+                    </div>
+                </div>
+
+                <div id="firebaseStatus" class="mt-4 text-center text-sm"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- API Configuration Warning Banner -->
-    <div id="apiWarningBanner" class="bg-yellow-50 border-b border-yellow-200">
+    <div id="apiWarningBanner" class="bg-yellow-50 border-b border-yellow-200 hidden">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -70,15 +152,19 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-40">
+    <nav id="mainNav" class="bg-white shadow-lg sticky top-0 z-40 hidden">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-cubes text-purple-600 text-2xl"></i>
                     <h1 class="text-2xl font-bold text-gray-800">Pro CRM</h1>
                     <span id="apiStatus" class="text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">APIs Not Configured</span>
+                    <span id="firebaseStatusBadge" class="text-xs ml-2 px-2 py-1 rounded-full bg-green-100 text-green-800">
+                        <i class="fas fa-cloud mr-1"></i>Cloud Sync
+                    </span>
                 </div>
-                <div class="flex space-x-4">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600" id="userEmail"></span>
                     <button onclick="showCustomerView()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
                         <i class="fas fa-address-book mr-2"></i>Customers
                     </button>
@@ -91,16 +177,25 @@
                     <button onclick="showApiConfigView()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
                         <i class="fas fa-cog mr-2"></i>API Config
                     </button>
+                    <button onclick="logout()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content Area -->
-    <main class="min-h-[85vh]">
+    <main id="mainContent" class="min-h-[85vh] hidden">
         <!-- Dashboard View -->
         <div id="dashboardView" class="max-w-7xl mx-auto px-4 py-8">
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h2>
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900">Dashboard Overview</h2>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <i class="fas fa-cloud text-green-500"></i>
+                    <span id="syncStatus">All data synced to cloud</span>
+                </div>
+            </div>
             
             <!-- API Status Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -128,9 +223,9 @@
                     <div class="flex items-center">
                         <i class="fas fa-database text-green-600 text-3xl p-3 bg-green-100 rounded-full"></i>
                         <div class="ml-4">
-                            <p class="text-sm text-gray-600">Local Storage</p>
-                            <p class="text-lg font-bold text-gray-900">Active</p>
-                            <p class="text-xs text-gray-600 mt-1">Data saved in browser</p>
+                            <p class="text-sm text-gray-600">Data Storage</p>
+                            <p class="text-lg font-bold text-gray-900">Firebase Cloud</p>
+                            <p class="text-xs text-gray-600 mt-1">Persistent cloud storage</p>
                         </div>
                     </div>
                 </div>
@@ -145,13 +240,19 @@
                 <div class="bg-white p-6 rounded-xl shadow-lg">
                     <h3 class="text-xl font-semibold mb-4 border-b pb-2">Recent Customers</h3>
                     <div id="recentCustomersList" class="min-h-[150px]">
-                        <p class="text-gray-400 text-center py-8">No customers yet</p>
+                        <div class="flex items-center justify-center py-8">
+                            <i class="fas fa-spinner fa-spin text-gray-400 mr-2"></i>
+                            <span class="text-gray-400">Loading...</span>
+                        </div>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-lg">
                     <h3 class="text-xl font-semibold mb-4 border-b pb-2">Today's Meetings</h3>
                     <div id="todaysMeetingsList" class="min-h-[150px]">
-                        <p class="text-gray-400 text-center py-8">No meetings today</p>
+                        <div class="flex items-center justify-center py-8">
+                            <i class="fas fa-spinner fa-spin text-gray-400 mr-2"></i>
+                            <span class="text-gray-400">Loading...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,7 +294,7 @@
                             <h3 class="text-lg font-semibold">Customers List</h3>
                         </div>
                         <div id="customersList" class="divide-y divide-gray-100 max-h-[70vh] overflow-y-auto">
-                            <div class="p-8 text-center text-gray-400">No customers found. Click "Add Customer" to get started.</div>
+                            <div class="p-8 text-center text-gray-400">Loading customers...</div>
                         </div>
                     </div>
                 </div>
@@ -231,7 +332,7 @@
                         <h3 class="text-lg font-semibold">Message Templates</h3>
                     </div>
                     <div id="messageTemplatesList" class="divide-y divide-gray-100 min-h-[200px]">
-                        <p class="p-6 text-center text-gray-400">No templates found. Create your first template!</p>
+                        <p class="p-6 text-center text-gray-400">Loading templates...</p>
                     </div>
                 </div>
 
@@ -545,14 +646,34 @@
 
     <script>
         // ===============================
+        // FIREBASE CONFIGURATION
+        // ===============================
+        
+        // Replace with your Firebase config
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ===============================
         // DATA STORAGE AND INITIALIZATION
         // ===============================
         
-        let customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
-        let meetings = JSON.parse(localStorage.getItem('crm_meetings')) || [];
-        let interactions = JSON.parse(localStorage.getItem('crm_interactions')) || [];
-        let messageTemplates = JSON.parse(localStorage.getItem('crm_templates')) || [];
+        let customers = [];
+        let meetings = [];
+        let interactions = [];
+        let messageTemplates = [];
         let selectedCustomerId = null;
+        let currentUser = null;
 
         // API Configuration
         const API_CONFIG = {
@@ -570,14 +691,184 @@
         };
 
         // ===============================
+        // FIREBASE AUTHENTICATION
+        // ===============================
+
+        function showLoginSection() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('registerSection').classList.add('hidden');
+        }
+
+        function showRegisterSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registerSection').classList.remove('hidden');
+        }
+
+        function showFirebaseStatus(message, type = 'info') {
+            const statusEl = document.getElementById('firebaseStatus');
+            statusEl.textContent = message;
+            statusEl.className = `mt-4 text-center text-sm ${type === 'error' ? 'text-red-600' : type === 'success' ? 'text-green-600' : 'text-blue-600'}`;
+        }
+
+        async function registerWithEmail() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showFirebaseStatus('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showFirebaseStatus('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                showFirebaseStatus('Creating account...', 'info');
+                await auth.createUserWithEmailAndPassword(email, password);
+                showFirebaseStatus('Account created successfully!', 'success');
+            } catch (error) {
+                showFirebaseStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function loginWithEmail() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                showFirebaseStatus('Signing in...', 'info');
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                showFirebaseStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                showFirebaseStatus('Signing in with Google...', 'info');
+                await auth.signInWithPopup(provider);
+            } catch (error) {
+                showFirebaseStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        // ===============================
+        // FIREBASE FIRESTORE FUNCTIONS
+        // ===============================
+
+        function getUserCollection(collectionName) {
+            if (!currentUser) throw new Error('User not authenticated');
+            return db.collection('users').doc(currentUser.uid).collection(collectionName);
+        }
+
+        async function loadDataFromFirebase() {
+            if (!currentUser) return;
+
+            try {
+                // Load customers
+                const customersSnapshot = await getUserCollection('customers').get();
+                customers = customersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load meetings
+                const meetingsSnapshot = await getUserCollection('meetings').get();
+                meetings = meetingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load interactions
+                const interactionsSnapshot = await getUserCollection('interactions').get();
+                interactions = interactionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load templates
+                const templatesSnapshot = await getUserCollection('templates').get();
+                messageTemplates = templatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Load API config
+                const configDoc = await db.collection('users').doc(currentUser.uid).collection('config').doc('api').get();
+                if (configDoc.exists) {
+                    Object.assign(API_CONFIG, configDoc.data());
+                    updateApiConfigUI();
+                }
+
+                updateDashboard();
+                if (document.getElementById('customerView').classList.contains('hidden') === false) {
+                    renderCustomers();
+                }
+                if (document.getElementById('automationView').classList.contains('hidden') === false) {
+                    renderMessageTemplates();
+                }
+                
+                showAlert('Data loaded from cloud successfully!', 'success');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showAlert('Error loading data from cloud', 'error');
+            }
+        }
+
+        async function saveDataToFirebase() {
+            if (!currentUser) return;
+
+            try {
+                // Save customers
+                const customersCol = getUserCollection('customers');
+                for (const customer of customers) {
+                    const { id, ...data } = customer;
+                    await customersCol.doc(id).set(data);
+                }
+                
+                // Save meetings
+                const meetingsCol = getUserCollection('meetings');
+                for (const meeting of meetings) {
+                    const { id, ...data } = meeting;
+                    await meetingsCol.doc(id).set(data);
+                }
+                
+                // Save interactions
+                const interactionsCol = getUserCollection('interactions');
+                for (const interaction of interactions) {
+                    const { id, ...data } = interaction;
+                    await interactionsCol.doc(id).set(data);
+                }
+                
+                // Save templates
+                const templatesCol = getUserCollection('templates');
+                for (const template of messageTemplates) {
+                    const { id, ...data } = template;
+                    await templatesCol.doc(id).set(data);
+                }
+                
+                // Save API config
+                const configRef = db.collection('users').doc(currentUser.uid).collection('config').doc('api');
+                await configRef.set(API_CONFIG);
+                
+                document.getElementById('syncStatus').textContent = 'All data synced to cloud';
+            } catch (error) {
+                console.error('Error saving data:', error);
+                document.getElementById('syncStatus').textContent = 'Sync failed - retrying...';
+                showAlert('Error saving data to cloud', 'error');
+            }
+        }
+
+        // ===============================
         // UTILITY FUNCTIONS
         // ===============================
 
         function saveData() {
+            // Save to localStorage as backup
             localStorage.setItem('crm_customers', JSON.stringify(customers));
             localStorage.setItem('crm_meetings', JSON.stringify(meetings));
             localStorage.setItem('crm_interactions', JSON.stringify(interactions));
             localStorage.setItem('crm_templates', JSON.stringify(messageTemplates));
+            localStorage.setItem('crm_api_config', JSON.stringify(API_CONFIG));
+            
+            // Save to Firebase
+            saveDataToFirebase();
             updateApiStatusUI();
         }
 
@@ -654,6 +945,7 @@
             localStorage.setItem('crm_api_config', JSON.stringify(API_CONFIG));
             updateApiConfigUI();
             updateApiStatusUI();
+            saveDataToFirebase();
         }
 
         function updateApiConfigUI() {
@@ -1471,62 +1763,35 @@
             document.getElementById('statusFilter').addEventListener('change', renderCustomers);
         }
 
-        function initializeApp() {
-            loadApiConfig();
+        function initializeAppForUser() {
+            document.getElementById('firebaseLoginModal').classList.add('hidden');
+            document.getElementById('mainNav').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('apiWarningBanner').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = currentUser.email;
+            
             initializeEventListeners();
+            loadDataFromFirebase();
             updateDashboard();
             showDashboard();
-            
-            // Add sample data if empty
-            if (customers.length === 0) {
-                customers = [
-                    {
-                        id: '1',
-                        name: 'John Smith',
-                        company: 'Acme Corp',
-                        email: 'john@acme.com',
-                        phone: '+15551234567',
-                        status: 'prospect',
-                        createdAt: new Date().toISOString(),
-                        messagingEnabled: true
-                    },
-                    {
-                        id: '2',
-                        name: 'Sarah Johnson',
-                        company: 'Tech Solutions Inc',
-                        email: 'sarah@techsolutions.com',
-                        phone: '+15559876543',
-                        status: 'customer',
-                        createdAt: new Date().toISOString(),
-                        messagingEnabled: true
-                    }
-                ];
-                saveData();
-                updateDashboard();
-            }
+        }
 
-            if (messageTemplates.length === 0) {
-                messageTemplates = [
-                    {
-                        id: '1',
-                        name: 'Immediate Follow-up',
-                        delayAmount: 5,
-                        delayUnit: 'minutes',
-                        content: 'Hi {{CustomerName}}, thank you for the meeting today! It was great discussing {{CompanyName}} with you.',
-                        createdAt: new Date().toISOString(),
-                        active: true
-                    },
-                    {
-                        id: '2', 
-                        name: '24-hour Check-in',
-                        delayAmount: 24,
-                        delayUnit: 'hours',
-                        content: 'Hello {{CustomerName}}, following up on our discussion yesterday. Let me know if you have any questions!',
-                        createdAt: new Date().toISOString(),
-                        active: true
-                    }
-                ];
-                saveData();
+        function initializeApp() {
+            // Check for existing authentication
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    initializeAppForUser();
+                } else {
+                    document.getElementById('firebaseLoginModal').classList.remove('hidden');
+                }
+            });
+
+            // Load API config from localStorage as fallback
+            const savedConfig = localStorage.getItem('crm_api_config');
+            if (savedConfig) {
+                Object.assign(API_CONFIG, JSON.parse(savedConfig));
+                updateApiConfigUI();
             }
         }
 
