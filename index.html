@@ -75,13 +75,13 @@
             <div id="signInForm">
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="signInEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="your@email.com" required>
+                    <input type="email" id="signInEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="your@email.com">
                 </div>
                 <div class="mb-6">
                     <label class="block text-gray-700 font-medium mb-2">Password</label>
-                    <input type="password" id="signInPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••" required>
+                    <input type="password" id="signInPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••">
                 </div>
-                <button onclick="signInWithEmail()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition duration-150 mb-4">
+                <button type="button" id="signInBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition duration-150 mb-4">
                     <i class="fas fa-sign-in-alt mr-2"></i>Sign In
                 </button>
 
@@ -94,13 +94,13 @@
                     </div>
                 </div>
 
-                <button onclick="signInWithGoogle()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-lg border border-gray-300 transition duration-150 mb-4 flex items-center justify-center">
+                <button type="button" id="googleSignInBtn" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-lg border border-gray-300 transition duration-150 mb-4 flex items-center justify-center">
                     <i class="fab fa-google mr-2 text-red-500"></i>Sign in with Google
                 </button>
 
                 <p class="text-center text-gray-600 text-sm mt-6">
                     Don't have an account? 
-                    <button onclick="showSignUpForm()" class="text-purple-600 font-medium hover:underline">Sign up</button>
+                    <button type="button" id="showSignUpBtn" class="text-purple-600 font-medium hover:underline">Sign up</button>
                 </p>
             </div>
 
@@ -108,23 +108,23 @@
             <div id="signUpForm" class="hidden">
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="signUpEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="your@email.com" required>
+                    <input type="email" id="signUpEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="your@email.com">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Password</label>
-                    <input type="password" id="signUpPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••" required>
+                    <input type="password" id="signUpPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••">
                 </div>
                 <div class="mb-6">
                     <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
-                    <input type="password" id="signUpConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••" required>
+                    <input type="password" id="signUpConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="••••••••">
                 </div>
-                <button onclick="signUpWithEmail()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition duration-150 mb-4">
+                <button type="button" id="signUpBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition duration-150 mb-4">
                     <i class="fas fa-user-plus mr-2"></i>Create Account
                 </button>
 
                 <p class="text-center text-gray-600 text-sm mt-6">
                     Already have an account? 
-                    <button onclick="showSignInForm()" class="text-purple-600 font-medium hover:underline">Sign in</button>
+                    <button type="button" id="showSignInBtn" class="text-purple-600 font-medium hover:underline">Sign in</button>
                 </p>
             </div>
         </div>
@@ -385,7 +385,7 @@
                         </div>
 
                         <button onclick="testEmailAPI()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
-                            <i class="fas fa-test-tube mr-2"></i>Test Email API
+                            <i class="fas fa-flask mr-2"></i>Test Email API
                         </button>
                     </div>
                 </div>
@@ -426,13 +426,13 @@
                         </div>
 
                         <button onclick="testWhatsAppAPI()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
-                            <i class="fas fa-test-tube mr-2"></i>Test WhatsApp API
+                            <i class="fas fa-flask mr-2"></i>Test WhatsApp API
                         </button>
                     </div>
                 </div>
 
                 <!-- Setup Instructions -->
-                <div class="bg-white rounded-xl shadow-lg p-6" id="api-setup">
+                <div class="bg-white rounded-xl shadow-lg p-6">
                     <h3 class="text-xl font-semibold mb-4 flex items-center">
                         <i class="fas fa-book text-purple-600 mr-3"></i>
                         Setup Instructions
@@ -480,6 +480,8 @@
             </div>
         </div>
     </main>
+    </div>
+    <!-- End of mainApp -->
 
     <!-- Customer Form Modal -->
     <div id="customerFormModal" class="modal fixed inset-0 hidden z-50">
@@ -628,6 +630,215 @@
     <!-- Alerts -->
     <div id="alertsContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
+    <!-- ==================== FIREBASE AUTHENTICATION ==================== -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1uRlRidnrrfS5OcCJyX_CJzqJ_LnVUWI",
+            authDomain: "business-crm-a6416.firebaseapp.com",
+            projectId: "business-crm-a6416",
+            storageBucket: "business-crm-a6416.firebasestorage.app",
+            messagingSenderId: "789780121298",
+            appId: "1:789780121298:web:7884cb712533f29705cf0b",
+            measurementId: "G-TTREW97000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('User signed in:', user.email);
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                const userEmailEl = document.getElementById('userEmail');
+                if (userEmailEl) {
+                    userEmailEl.textContent = user.email;
+                }
+                
+                if (typeof window.initializeCRMApp === 'function') {
+                    window.initializeCRMApp();
+                }
+            } else {
+                console.log('User signed out');
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+        });
+
+        // Sign In with Email
+        async function handleSignIn() {
+            const email = document.getElementById('signInEmail').value.trim();
+            const password = document.getElementById('signInPassword').value;
+
+            if (!email || !password) {
+                showAuthMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showAuthMessage('Successfully signed in!', 'success');
+            } catch (error) {
+                console.error('Sign in error:', error);
+                showAuthMessage(getErrorMessage(error.code), 'error');
+            }
+        }
+
+        // Sign Up with Email
+        async function handleSignUp() {
+            const email = document.getElementById('signUpEmail').value.trim();
+            const password = document.getElementById('signUpPassword').value;
+            const confirmPassword = document.getElementById('signUpConfirmPassword').value;
+
+            if (!email || !password || !confirmPassword) {
+                showAuthMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAuthMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showAuthMessage('Account created successfully!', 'success');
+            } catch (error) {
+                console.error('Sign up error:', error);
+                showAuthMessage(getErrorMessage(error.code), 'error');
+            }
+        }
+
+        // Sign In with Google
+        async function handleGoogleSignIn() {
+            try {
+                await signInWithPopup(auth, googleProvider);
+                showAuthMessage('Successfully signed in with Google!', 'success');
+            } catch (error) {
+                console.error('Google sign in error:', error);
+                showAuthMessage(getErrorMessage(error.code), 'error');
+            }
+        }
+
+        // Sign Out
+        window.signOutUser = async function() {
+            if (confirm('Are you sure you want to sign out?')) {
+                try {
+                    await firebaseSignOut(auth);
+                    showAuthMessage('Successfully signed out', 'success');
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    alert('Error signing out. Please try again.');
+                }
+            }
+        };
+
+        // Show/Hide Forms
+        function showSignUpForm() {
+            document.getElementById('signInForm').classList.add('hidden');
+            document.getElementById('signUpForm').classList.remove('hidden');
+            clearAuthMessage();
+        }
+
+        function showSignInForm() {
+            document.getElementById('signUpForm').classList.add('hidden');
+            document.getElementById('signInForm').classList.remove('hidden');
+            clearAuthMessage();
+        }
+
+        // Auth Message Display
+        function showAuthMessage(message, type) {
+            const msgDiv = document.getElementById('authMessage');
+            msgDiv.textContent = message;
+            msgDiv.className = `mb-4 p-3 rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            msgDiv.classList.remove('hidden');
+        }
+
+        function clearAuthMessage() {
+            document.getElementById('authMessage').classList.add('hidden');
+        }
+
+        // Error message translator
+        function getErrorMessage(code) {
+            const messages = {
+                'auth/email-already-in-use': 'This email is already registered',
+                'auth/invalid-email': 'Invalid email address',
+                'auth/operation-not-allowed': 'Operation not allowed',
+                'auth/weak-password': 'Password is too weak',
+                'auth/user-disabled': 'This account has been disabled',
+                'auth/user-not-found': 'No account found with this email',
+                'auth/wrong-password': 'Incorrect password',
+                'auth/popup-closed-by-user': 'Sign-in popup was closed',
+                'auth/cancelled-popup-request': 'Only one popup request is allowed',
+                'auth/invalid-credential': 'Invalid email or password'
+            };
+            return messages[code] || 'An error occurred. Please try again.';
+        }
+
+        // Event listeners using addEventListener instead of onclick
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sign In button
+            const signInBtn = document.getElementById('signInBtn');
+            if (signInBtn) {
+                signInBtn.addEventListener('click', handleSignIn);
+            }
+            
+            // Sign Up button
+            const signUpBtn = document.getElementById('signUpBtn');
+            if (signUpBtn) {
+                signUpBtn.addEventListener('click', handleSignUp);
+            }
+            
+            // Google Sign In button
+            const googleSignInBtn = document.getElementById('googleSignInBtn');
+            if (googleSignInBtn) {
+                googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+            }
+            
+            // Show Sign Up form button
+            const showSignUpBtn = document.getElementById('showSignUpBtn');
+            if (showSignUpBtn) {
+                showSignUpBtn.addEventListener('click', showSignUpForm);
+            }
+            
+            // Show Sign In form button
+            const showSignInBtn = document.getElementById('showSignInBtn');
+            if (showSignInBtn) {
+                showSignInBtn.addEventListener('click', showSignInForm);
+            }
+            
+            // Enter key support for sign in
+            const signInPassword = document.getElementById('signInPassword');
+            if (signInPassword) {
+                signInPassword.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') handleSignIn();
+                });
+            }
+            
+            // Enter key support for sign up
+            const signUpConfirmPassword = document.getElementById('signUpConfirmPassword');
+            if (signUpConfirmPassword) {
+                signUpConfirmPassword.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') handleSignUp();
+                });
+            }
+        });
+    </script>
+
+    <!-- ==================== CRM APPLICATION LOGIC ==================== -->
     <script>
         // ===============================
         // DATA STORAGE AND INITIALIZATION
@@ -775,7 +986,6 @@
                 whatsappStatusCard.querySelector('.text-xs').className = 'text-xs text-green-600 mt-1';
             }
 
-            // Update main API status
             if (API_CONFIG.email.enabled && API_CONFIG.whatsapp.enabled) {
                 apiStatus.textContent = 'APIs Configured';
                 apiStatus.className = 'text-xs ml-4 px-2 py-1 rounded-full bg-green-100 text-green-800';
@@ -892,7 +1102,6 @@
                 return;
             }
 
-            // Save config
             API_CONFIG.email.apiUrl = apiUrl;
             API_CONFIG.email.fromEmail = fromEmail;
             API_CONFIG.email.fromName = fromName;
@@ -902,7 +1111,7 @@
 
             try {
                 const testData = {
-                    to: fromEmail, // Send test to yourself
+                    to: fromEmail,
                     from: { email: fromEmail, name: fromName },
                     subject: 'CRM Email API Test',
                     content: 'This is a test email from your CRM system. If you receive this, your email API is working correctly!',
@@ -936,7 +1145,6 @@
                 return;
             }
 
-            // Save config
             API_CONFIG.whatsapp.apiUrl = apiUrl;
             API_CONFIG.whatsapp.businessPhone = businessPhone;
             saveApiConfig();
@@ -945,7 +1153,7 @@
 
             try {
                 const testData = {
-                    to: businessPhone, // Send test to your business number
+                    to: businessPhone,
                     from: businessPhone,
                     message: 'This is a test message from your CRM system. If you receive this, your WhatsApp API is working correctly!',
                     isTest: true
@@ -988,15 +1196,12 @@
             
             if (!meeting || !customer) return;
 
-            // Mark meeting as completed
             meeting.completed = true;
             meeting.endTime = new Date().toISOString();
             saveData();
 
-            // Get active templates
             const activeTemplates = messageTemplates.filter(t => t.active !== false);
             
-            // Process each template with its delay
             activeTemplates.forEach(template => {
                 const delayMs = calculateDelayMs(template.delayAmount, template.delayUnit);
                 
@@ -1004,17 +1209,14 @@
                     let emailSent = false;
                     let whatsappSent = false;
 
-                    // Send email if configured and enabled
                     if (API_CONFIG.email.enabled && customer.email) {
                         emailSent = await sendAutomatedEmail(customer, template, meeting);
                     }
 
-                    // Send WhatsApp if configured and enabled
                     if (API_CONFIG.whatsapp.enabled && customer.phone) {
                         whatsappSent = await sendAutomatedWhatsApp(customer, template, meeting);
                     }
 
-                    // Log the automation result
                     if (emailSent || whatsappSent) {
                         const interaction = {
                             id: Date.now().toString(),
@@ -1242,6 +1444,8 @@
                     </div>
                 </div>
             `;
+            
+            renderCustomers();
         }
 
         function showConfirmDeleteModal(customerId) {
@@ -1513,7 +1717,6 @@
                 </div>
             `;
             
-            // Recent customers
             const recentCustomers = customers.slice(0, 4);
             document.getElementById('recentCustomersList').innerHTML = recentCustomers.length ? 
                 recentCustomers.map(customer => `
@@ -1528,7 +1731,6 @@
                     </div>
                 `).join('') : '<p class="text-gray-500 text-center py-4">No customers yet</p>';
             
-            // Today's meetings
             document.getElementById('todaysMeetingsList').innerHTML = todaysMeetings.length ?
                 todaysMeetings.map(meeting => {
                     const customer = customers.find(c => c.id === meeting.customerId);
@@ -1556,13 +1758,13 @@
             document.getElementById('statusFilter').addEventListener('change', renderCustomers);
         }
 
-        function initializeApp() {
+        // Rename to avoid conflict with Firebase initializeApp
+        window.initializeCRMApp = function() {
             loadApiConfig();
             initializeEventListeners();
             updateDashboard();
             showDashboard();
             
-            // Add sample data if empty
             if (customers.length === 0) {
                 customers = [
                     {
@@ -1613,216 +1815,7 @@
                 ];
                 saveData();
             }
-    </div>
-    <!-- End of mainApp -->
-
-    <!-- ==================== FIREBASE AUTHENTICATION ==================== -->
-    <script type="module">
-        // Import Firebase SDKs
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD1uRlRidnrrfS5OcCJyX_CJzqJ_LnVUWI",
-            authDomain: "business-crm-a6416.firebaseapp.com",
-            projectId: "business-crm-a6416",
-            storageBucket: "business-crm-a6416.firebasestorage.app",
-            messagingSenderId: "789780121298",
-            appId: "1:789780121298:web:7884cb712533f29705cf0b",
-            measurementId: "G-TTREW97000"
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        // Make auth available globally
-        window.firebaseAuth = auth;
-        window.googleProvider = googleProvider;
-
-        // Auth state observer
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                console.log('User signed in:', user.email);
-                document.getElementById('authScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                
-                // Add user email to nav if element exists
-                const userEmailEl = document.getElementById('userEmail');
-                if (userEmailEl) {
-                    userEmailEl.textContent = user.email;
-                }
-                
-                // Initialize the CRM app
-                if (typeof initializeApp === 'function') {
-                    initializeApp();
-                }
-            } else {
-                // User is signed out
-                console.log('User signed out');
-                document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('mainApp').classList.add('hidden');
-            }
-        });
-
-        // Sign In with Email
-        window.signInWithEmail = async function() {
-            const email = document.getElementById('signInEmail').value;
-            const password = document.getElementById('signInPassword').value;
-
-            if (!email || !password) {
-                showAuthMessage('Please enter both email and password', 'error');
-                return;
-            }
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                showAuthMessage('Successfully signed in!', 'success');
-            } catch (error) {
-                console.error('Sign in error:', error);
-                showAuthMessage(getErrorMessage(error.code), 'error');
-            }
-        };
-
-        // Sign Up with Email
-        window.signUpWithEmail = async function() {
-            const email = document.getElementById('signUpEmail').value;
-            const password = document.getElementById('signUpPassword').value;
-            const confirmPassword = document.getElementById('signUpConfirmPassword').value;
-
-            if (!email || !password || !confirmPassword) {
-                showAuthMessage('Please fill in all fields', 'error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showAuthMessage('Passwords do not match', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showAuthMessage('Password must be at least 6 characters', 'error');
-                return;
-            }
-
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                showAuthMessage('Account created successfully!', 'success');
-            } catch (error) {
-                console.error('Sign up error:', error);
-                showAuthMessage(getErrorMessage(error.code), 'error');
-            }
-        };
-
-        // Sign In with Google
-        window.signInWithGoogle = async function() {
-            try {
-                await signInWithPopup(auth, googleProvider);
-                showAuthMessage('Successfully signed in with Google!', 'success');
-            } catch (error) {
-                console.error('Google sign in error:', error);
-                showAuthMessage(getErrorMessage(error.code), 'error');
-            }
-        };
-
-        // Sign Out
-        window.signOutUser = async function() {
-            if (confirm('Are you sure you want to sign out?')) {
-                try {
-                    await firebaseSignOut(auth);
-                    showAuthMessage('Successfully signed out', 'success');
-                } catch (error) {
-                    console.error('Sign out error:', error);
-                    alert('Error signing out. Please try again.');
-                }
-            }
-        };
-
-        // Show/Hide Forms
-        window.showSignUpForm = function() {
-            document.getElementById('signInForm').classList.add('hidden');
-            document.getElementById('signUpForm').classList.remove('hidden');
-            clearAuthMessage();
-        };
-
-        window.showSignInForm = function() {
-            document.getElementById('signUpForm').classList.add('hidden');
-            document.getElementById('signInForm').classList.remove('hidden');
-            clearAuthMessage();
-        };
-
-        // Auth Message Display
-        function showAuthMessage(message, type) {
-            const msgDiv = document.getElementById('authMessage');
-            msgDiv.textContent = message;
-            msgDiv.className = `mb-4 p-3 rounded-lg ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-            msgDiv.classList.remove('hidden');
-        }
-
-        function clearAuthMessage() {
-            document.getElementById('authMessage').classList.add('hidden');
-        }
-
-        // Error message translator
-        function getErrorMessage(code) {
-            const messages = {
-                'auth/email-already-in-use': 'This email is already registered',
-                'auth/invalid-email': 'Invalid email address',
-                'auth/operation-not-allowed': 'Operation not allowed',
-                'auth/weak-password': 'Password is too weak',
-                'auth/user-disabled': 'This account has been disabled',
-                'auth/user-not-found': 'No account found with this email',
-                'auth/wrong-password': 'Incorrect password',
-                'auth/popup-closed-by-user': 'Sign-in popup was closed',
-                'auth/cancelled-popup-request': 'Only one popup request is allowed',
-                'auth/invalid-credential': 'Invalid email or password'
-            };
-            return messages[code] || 'An error occurred. Please try again.';
-        }
-
-        // Enter key support
-        document.addEventListener('DOMContentLoaded', () => {
-            const signInPassword = document.getElementById('signInPassword');
-            const signUpConfirmPassword = document.getElementById('signUpConfirmPassword');
-            
-            if (signInPassword) {
-                signInPassword.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') signInWithEmail();
-                });
-            }
-            
-            if (signUpConfirmPassword) {
-                signUpConfirmPassword.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') signUpWithEmail();
-                });
-            }
-        });
     </script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyD1uRlRidnrrfS5OcCJyX_CJzqJ_LnVUWI",
-    authDomain: "business-crm-a6416.firebaseapp.com",
-    projectId: "business-crm-a6416",
-    storageBucket: "business-crm-a6416.firebasestorage.app",
-    messagingSenderId: "789780121298",
-    appId: "1:789780121298:web:7884cb712533f29705cf0b",
-    measurementId: "G-TTREW97000"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </body>
 </html>
