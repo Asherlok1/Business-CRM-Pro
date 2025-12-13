@@ -15,7 +15,7 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .api-warning { border-left: 4px solid #f59e0b; }
         .auth-container {
             display: flex;
             align-items: center;
@@ -27,7 +27,7 @@
 </head>
 <body class="bg-gray-50">
     
-    <!-- AUTHENTICATION SCREEN -->
+    <!-- ==================== AUTHENTICATION SCREEN ==================== -->
     <div id="authScreen" class="auth-container">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
             <div class="text-center mb-8">
@@ -97,38 +97,436 @@
         </div>
     </div>
 
-    <!-- MAIN CRM APPLICATION (keeping it short for brevity) -->
+    <!-- ==================== MAIN CRM APPLICATION ==================== -->
     <div id="mainApp" class="hidden min-h-screen">
-        <nav class="bg-white shadow-lg sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between items-center py-4">
-                    <div class="flex items-center space-x-4">
-                        <i class="fas fa-cubes text-purple-600 text-2xl"></i>
-                        <h1 class="text-2xl font-bold text-gray-800">Pro CRM</h1>
+    <!-- API Configuration Warning Banner -->
+    <div id="apiWarningBanner" class="bg-yellow-50 border-b border-yellow-200">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-3"></i>
+                    <p class="text-yellow-800 text-sm">
+                        <strong>API Configuration Required:</strong> Email and WhatsApp automation require backend setup. 
+                        <button onclick="showApiConfigView()" class="underline ml-1 font-medium">Configure Now</button>
+                    </p>
+                </div>
+                <button onclick="hideApiWarning()" class="text-yellow-600 hover:text-yellow-800">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-cubes text-purple-600 text-2xl"></i>
+                    <h1 class="text-2xl font-bold text-gray-800">Pro CRM</h1>
+                    <span id="apiStatus" class="text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">APIs Not Configured</span>
+                </div>
+                <div class="flex space-x-4 items-center">
+                    <span id="userEmail" class="text-sm text-gray-600 font-medium"></span>
+                    <button onclick="showCustomerView()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-address-book mr-2"></i>Customers
+                    </button>
+                    <button onclick="showAddMeetingModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-calendar-plus mr-2"></i>Schedule Meeting
+                    </button>
+                    <button onclick="showAutomationView()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-robot mr-2"></i>Automations
+                    </button>
+                    <button onclick="showApiConfigView()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-cog mr-2"></i>API Config
+                    </button>
+                    <button onclick="signOutUser()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="min-h-[85vh]">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="max-w-7xl mx-auto px-4 py-8">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h2>
+            
+            <!-- API Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div id="emailStatusCard" class="api-warning bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-envelope text-yellow-600 text-3xl p-3 bg-yellow-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Email API</p>
+                            <p class="text-lg font-bold text-yellow-700">Not Configured</p>
+                            <p class="text-xs text-yellow-600 mt-1">Setup required for automation</p>
+                        </div>
                     </div>
-                    <div class="flex space-x-4 items-center">
-                        <span id="userEmail" class="text-sm text-gray-600 font-medium"></span>
-                        <button onclick="signOutUser()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                </div>
+                <div id="whatsappStatusCard" class="api-warning bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center">
+                        <i class="fab fa-whatsapp text-yellow-600 text-3xl p-3 bg-yellow-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">WhatsApp API</p>
+                            <p class="text-lg font-bold text-yellow-700">Not Configured</p>
+                            <p class="text-xs text-yellow-600 mt-1">Setup required for automation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-database text-green-600 text-3xl p-3 bg-green-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Local Storage</p>
+                            <p class="text-lg font-bold text-gray-900">Active</p>
+                            <p class="text-xs text-gray-600 mt-1">Data saved in browser</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div id="statsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Stats will be populated here -->
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">Recent Customers</h3>
+                    <div id="recentCustomersList" class="min-h-[150px]">
+                        <p class="text-gray-400 text-center py-8">No customers yet</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 border-b pb-2">Today's Meetings</h3>
+                    <div id="todaysMeetingsList" class="min-h-[150px]">
+                        <p class="text-gray-400 text-center py-8">No meetings today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Management View -->
+        <div id="customerView" class="max-w-7xl mx-auto px-4 py-8 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-4">
+                    <button onclick="showDashboard()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center transition duration-150">
+                        <i class="fas fa-arrow-left mr-2"></i>Dashboard
+                    </button>
+                    <h2 class="text-3xl font-bold text-gray-800">Customer Management</h2>
+                </div>
+                <button onclick="showCustomerFormModal('add')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150">
+                    <i class="fas fa-plus mr-2"></i>Add Customer
+                </button>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="bg-white p-4 rounded-xl shadow-lg mb-6">
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <div class="flex-1">
+                        <input type="text" id="searchInput" placeholder="Search customers by name or company..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-150">
+                    </div>
+                    <select id="statusFilter" class="border border-gray-300 rounded-lg px-3 py-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="all">All Status</option>
+                        <option value="prospect">Prospect</option>
+                        <option value="customer">Customer</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-lg">
+                        <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
+                            <h3 class="text-lg font-semibold">Customers List</h3>
+                        </div>
+                        <div id="customersList" class="divide-y divide-gray-100 max-h-[70vh] overflow-y-auto">
+                            <div class="p-8 text-center text-gray-400">No customers found. Click "Add Customer" to get started.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div id="customerDetails" class="bg-white rounded-xl shadow-lg p-6 sticky top-[95px] max-h-[85vh] overflow-y-auto">
+                        <div class="text-center p-12">
+                            <i class="fas fa-magnifying-glass-chart text-gray-300 text-5xl mb-4"></i>
+                            <p class="text-gray-500 font-medium">Select a customer to view details and history.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Management View -->
+        <div id="automationView" class="max-w-7xl mx-auto px-4 py-8 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-4">
+                    <button onclick="showDashboard()" class="text-teal-600 hover:text-teal-800 font-medium flex items-center transition duration-150">
+                        <i class="fas fa-arrow-left mr-2"></i>Dashboard
+                    </button>
+                    <h2 class="text-3xl font-bold text-gray-800">Automations & Messaging</h2>
+                </div>
+                <button onclick="showTemplateFormModal('add')" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150">
+                    <i class="fas fa-plus mr-2"></i>New Template
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="px-6 py-4 border-b bg-gray-50 rounded-t-xl">
+                        <h3 class="text-lg font-semibold">Message Templates</h3>
+                    </div>
+                    <div id="messageTemplatesList" class="divide-y divide-gray-100 min-h-[200px]">
+                        <p class="p-6 text-center text-gray-400">No templates found. Create your first template!</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 border-b pb-2">Message Schedule</h3>
+                    <p class="text-sm text-gray-600 mb-4">Upcoming automated messages based on completed meetings.</p>
+                    <div id="timedMessageStatus" class="space-y-4">
+                        <p class="text-center text-gray-400">Complete some meetings to see scheduled messages.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Configuration View -->
+        <div id="apiConfigView" class="max-w-4xl mx-auto px-4 py-8 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-4">
+                    <button onclick="showDashboard()" class="text-orange-600 hover:text-orange-800 font-medium flex items-center transition duration-150">
+                        <i class="fas fa-arrow-left mr-2"></i>Dashboard
+                    </button>
+                    <h2 class="text-3xl font-bold text-gray-800">API Configuration</h2>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-envelope text-blue-600 mr-3"></i>
+                        Email API Configuration
+                    </h3>
+                    
+                    <div class="api-warning bg-yellow-50 p-4 rounded-lg mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-yellow-800">Backend Required</p>
+                                <p class="text-sm text-yellow-700 mt-1">
+                                    Email automation requires a backend server with email service integration.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Backend API URL</label>
+                            <input type="url" id="emailApiUrl" placeholder="https://your-backend.com/api/send-email" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">From Email</label>
+                                <input type="email" id="fromEmail" placeholder="noreply@yourbusiness.com" 
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">From Name</label>
+                                <input type="text" id="fromName" placeholder="Your Business Name" 
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <button onclick="testEmailAPI()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
+                            <i class="fas fa-flask mr-2"></i>Test Email API
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fab fa-whatsapp text-green-600 mr-3"></i>
+                        WhatsApp API Configuration
+                    </h3>
+
+                    <div class="api-warning bg-yellow-50 p-4 rounded-lg mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-yellow-800">Backend Required</p>
+                                <p class="text-sm text-yellow-700 mt-1">
+                                    WhatsApp automation requires a backend server with WhatsApp Business API integration.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Backend API URL</label>
+                            <input type="url" id="whatsappApiUrl" placeholder="https://your-backend.com/api/send-whatsapp" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Business Phone Number</label>
+                            <input type="text" id="businessPhone" placeholder="+1234567890" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+
+                        <button onclick="testWhatsAppAPI()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
+                            <i class="fas fa-flask mr-2"></i>Test WhatsApp API
                         </button>
                     </div>
                 </div>
             </div>
-        </nav>
-        
-        <main class="max-w-7xl mx-auto px-4 py-8">
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Welcome to Pro CRM!</h2>
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <p class="text-gray-700 text-lg">You are successfully signed in!</p>
-                <p class="text-gray-600 mt-4">Your CRM dashboard will load here.</p>
+        </div>
+    </main>
+    </div>
+
+    <!-- Customer Form Modal -->
+    <div id="customerFormModal" class="modal fixed inset-0 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
+                <h3 id="customerFormTitle" class="text-xl font-bold mb-6 text-gray-800">Add New Customer</h3>
+                <form id="customerForm" class="space-y-4">
+                    <input type="hidden" id="editCustomerId">
+                    <input type="text" id="customerName" placeholder="Full Name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                    <input type="text" id="customerCompany" placeholder="Company" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                    <input type="email" id="customerEmail" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+                    <input type="tel" id="customerPhone" placeholder="Phone (e.g., +14155552671)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                    <select id="customerStatus" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                        <option value="prospect">Prospect</option>
+                        <option value="customer">Customer</option>
+                    </select>
+                    <div class="flex space-x-2 pt-4">
+                        <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-save mr-2"></i>Save Customer
+                        </button>
+                        <button type="button" onclick="hideModal('customerFormModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-xl font-medium transition duration-150">Cancel</button>
+                    </div>
+                </form>
             </div>
-        </main>
+        </div>
+    </div>
+
+    <!-- Template Form Modal -->
+    <div id="templateFormModal" class="modal fixed inset-0 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
+                <h3 id="templateFormTitle" class="text-xl font-bold mb-6 text-gray-800">New Message Template</h3>
+                <form id="templateForm" class="space-y-4">
+                    <input type="hidden" id="editTemplateId">
+                    <input type="text" id="templateName" placeholder="Template Name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required>
+                    
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Send After Meeting End:</label>
+                        <select id="templateDelayUnit" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                        </select>
+                        <input type="number" id="templateDelayAmount" placeholder="Delay amount" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required min="1">
+                    </div>
+
+                    <textarea id="templateContent" placeholder="Message Content (use {{CustomerName}} and {{CompanyName}})" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" required></textarea>
+                    
+                    <div class="pt-2 text-sm text-gray-500">
+                        <p>Variables: <code>{{CustomerName}}</code>, <code>{{CompanyName}}</code></p>
+                    </div>
+
+                    <div class="flex space-x-2 pt-4">
+                        <button type="submit" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-save mr-2"></i>Save Template
+                        </button>
+                        <button type="button" onclick="hideModal('templateFormModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-xl font-medium transition duration-150">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Meeting Modal -->
+    <div id="addMeetingModal" class="modal fixed inset-0 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
+                <h3 class="text-xl font-bold mb-6 text-gray-800">Schedule Meeting</h3>
+                <form id="meetingForm" class="space-y-4">
+                    <select id="meetingCustomer" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="">Select Customer</option>
+                    </select>
+                    <input type="text" id="meetingTitle" placeholder="Meeting Title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="date" id="meetingDate" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        <input type="time" id="meetingTime" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <input type="text" id="meetingLocation" placeholder="Location (e.g., Zoom, Office)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                    <div class="flex space-x-2 pt-4">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-calendar-check mr-2"></i>Schedule
+                        </button>
+                        <button type="button" onclick="hideModal('addMeetingModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-xl font-medium transition duration-150">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Interaction Modal -->
+    <div id="logInteractionModal" class="modal fixed inset-0 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
+                <h3 class="text-xl font-bold mb-6 text-gray-800">Log Interaction</h3>
+                <form id="interactionForm" class="space-y-4">
+                    <input type="hidden" id="interactionCustomerId">
+                    <select id="interactionType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                        <option value="">Select Interaction Type</option>
+                        <option value="Phone Call">Phone Call</option>
+                        <option value="Email">Email</option>
+                        <option value="In-Person Meeting">In-Person Meeting</option>
+                        <option value="Note">General Note</option>
+                    </select>
+                    <textarea id="interactionNotes" placeholder="Enter detailed notes..." rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required></textarea>
+
+                    <div class="flex space-x-2 pt-4">
+                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-medium transition duration-150">
+                            <i class="fas fa-pencil-alt mr-2"></i>Log Entry
+                        </button>
+                        <button type="button" onclick="hideModal('logInteractionModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-xl font-medium transition duration-150">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmDeleteModal" class="modal fixed inset-0 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-sm w-full p-8 shadow-2xl">
+                <i class="fas fa-triangle-exclamation text-red-500 text-4xl mb-4"></i>
+                <h3 class="text-xl font-bold mb-3 text-gray-800">Confirm Deletion</h3>
+                <p class="text-gray-600 mb-6">Are you sure you want to delete this customer? This action cannot be undone.</p>
+                <input type="hidden" id="customerToDeleteId">
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="deleteCustomer()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-medium transition duration-150">Delete</button>
+                    <button type="button" onclick="hideModal('confirmDeleteModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-xl font-medium transition duration-150">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Alerts -->
     <div id="alertsContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-    <!-- Firebase Authentication Script -->
+    <!-- Firebase Authentication -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -147,9 +545,7 @@
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // Make functions globally available
         window.handleSignIn = async function() {
-            console.log('Sign In clicked');
             const email = document.getElementById('signInEmail').value.trim();
             const password = document.getElementById('signInPassword').value;
 
@@ -168,7 +564,6 @@
         };
 
         window.handleSignUp = async function() {
-            console.log('Sign Up clicked');
             const email = document.getElementById('signUpEmail').value.trim();
             const password = document.getElementById('signUpPassword').value;
             const confirmPassword = document.getElementById('signUpConfirmPassword').value;
@@ -198,7 +593,6 @@
         };
 
         window.handleGoogleSignIn = async function() {
-            console.log('Google Sign In clicked');
             try {
                 await signInWithPopup(auth, googleProvider);
                 showAuthMessage('Successfully signed in with Google!', 'success');
@@ -212,7 +606,6 @@
             if (confirm('Are you sure you want to sign out?')) {
                 try {
                     await signOut(auth);
-                    showAuthMessage('Successfully signed out', 'success');
                 } catch (error) {
                     console.error('Sign out error:', error);
                     alert('Error signing out. Please try again.');
@@ -255,21 +648,18 @@
             return messages[code] || 'An error occurred. Please try again.';
         }
 
-        // Auth state observer
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log('User signed in:', user.email);
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('userEmail').textContent = user.email;
+                initializeCRMApp();
             } else {
-                console.log('User signed out');
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('mainApp').classList.add('hidden');
             }
         });
 
-        // Enter key support
         document.addEventListener('DOMContentLoaded', () => {
             const signInPassword = document.getElementById('signInPassword');
             if (signInPassword) {
@@ -285,8 +675,701 @@
                 });
             }
         });
+    </script>
 
-        console.log('Firebase initialized successfully');
+    <!-- CRM Application Logic -->
+    <script>
+        let customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
+        let meetings = JSON.parse(localStorage.getItem('crm_meetings')) || [];
+        let interactions = JSON.parse(localStorage.getItem('crm_interactions')) || [];
+        let messageTemplates = JSON.parse(localStorage.getItem('crm_templates')) || [];
+        let selectedCustomerId = null;
+
+        const API_CONFIG = {
+            email: { enabled: false, apiUrl: '', fromEmail: '', fromName: '' },
+            whatsapp: { enabled: false, apiUrl: '', businessPhone: '' }
+        };
+
+        function saveData() {
+            localStorage.setItem('crm_customers', JSON.stringify(customers));
+            localStorage.setItem('crm_meetings', JSON.stringify(meetings));
+            localStorage.setItem('crm_interactions', JSON.stringify(interactions));
+            localStorage.setItem('crm_templates', JSON.stringify(messageTemplates));
+            updateApiStatusUI();
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            const colors = {success: 'green', error: 'red', warning: 'yellow', info: 'blue'};
+            const color = colors[type] || 'blue';
+            alert.className = `alert-notification bg-${color}-100 border-l-4 border-${color}-500 p-4 rounded-xl shadow-lg max-w-sm`;
+            alert.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-medium text-${color}-800">${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+                        <p class="text-sm text-${color}-700">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-${color}-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            document.getElementById('alertsContainer').appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return 'N/A';
+            const [hours, minutes] = timeString.split(':');
+            const date = new Date();
+            date.setHours(parseInt(hours), parseInt(minutes));
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            return new Date(dateString).toLocaleString('en-US', { 
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', hour12: true 
+            });
+        }
+
+        function loadApiConfig() {
+            const savedConfig = localStorage.getItem('crm_api_config');
+            if (savedConfig) {
+                Object.assign(API_CONFIG, JSON.parse(savedConfig));
+                updateApiConfigUI();
+                updateApiStatusUI();
+            }
+        }
+
+        function saveApiConfig() {
+            localStorage.setItem('crm_api_config', JSON.stringify(API_CONFIG));
+            updateApiConfigUI();
+            updateApiStatusUI();
+        }
+
+        function updateApiConfigUI() {
+            document.getElementById('emailApiUrl').value = API_CONFIG.email.apiUrl || '';
+            document.getElementById('fromEmail').value = API_CONFIG.email.fromEmail || '';
+            document.getElementById('fromName').value = API_CONFIG.email.fromName || '';
+            document.getElementById('whatsappApiUrl').value = API_CONFIG.whatsapp.apiUrl || '';
+            document.getElementById('businessPhone').value = API_CONFIG.whatsapp.businessPhone || '';
+            
+            API_CONFIG.email.enabled = !!(API_CONFIG.email.apiUrl && API_CONFIG.email.fromEmail);
+            API_CONFIG.whatsapp.enabled = !!(API_CONFIG.whatsapp.apiUrl && API_CONFIG.whatsapp.businessPhone);
+        }
+
+        function updateApiStatusUI() {
+            const emailCard = document.getElementById('emailStatusCard');
+            const whatsappCard = document.getElementById('whatsappStatusCard');
+            const apiStatus = document.getElementById('apiStatus');
+
+            if (API_CONFIG.email.enabled) {
+                emailCard.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500';
+                emailCard.querySelector('i').className = 'fas fa-envelope text-green-600 text-3xl p-3 bg-green-100 rounded-full';
+                emailCard.querySelector('.text-lg').textContent = 'Configured';
+                emailCard.querySelector('.text-lg').className = 'text-lg font-bold text-green-700';
+            }
+
+            if (API_CONFIG.whatsapp.enabled) {
+                whatsappCard.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500';
+                whatsappCard.querySelector('i').className = 'fab fa-whatsapp text-green-600 text-3xl p-3 bg-green-100 rounded-full';
+                whatsappCard.querySelector('.text-lg').textContent = 'Configured';
+                whatsappCard.querySelector('.text-lg').className = 'text-lg font-bold text-green-700';
+            }
+
+            if (API_CONFIG.email.enabled && API_CONFIG.whatsapp.enabled) {
+                apiStatus.textContent = 'APIs Configured';
+                apiStatus.className = 'text-xs ml-4 px-2 py-1 rounded-full bg-green-100 text-green-800';
+            } else if (API_CONFIG.email.enabled || API_CONFIG.whatsapp.enabled) {
+                apiStatus.textContent = 'Partial APIs';
+                apiStatus.className = 'text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800';
+            }
+        }
+
+        function hideApiWarning() {
+            document.getElementById('apiWarningBanner').style.display = 'none';
+        }
+
+        async function testEmailAPI() {
+            const apiUrl = document.getElementById('emailApiUrl').value;
+            const fromEmail = document.getElementById('fromEmail').value;
+            const fromName = document.getElementById('fromName').value;
+
+            if (!apiUrl || !fromEmail) {
+                showAlert('Please fill in all required email fields', 'error');
+                return;
+            }
+
+            API_CONFIG.email.apiUrl = apiUrl;
+            API_CONFIG.email.fromEmail = fromEmail;
+            API_CONFIG.email.fromName = fromName;
+            saveApiConfig();
+
+            showAlert('Email API configuration saved!', 'success');
+        }
+
+        async function testWhatsAppAPI() {
+            const apiUrl = document.getElementById('whatsappApiUrl').value;
+            const businessPhone = document.getElementById('businessPhone').value;
+
+            if (!apiUrl || !businessPhone) {
+                showAlert('Please fill in all required WhatsApp fields', 'error');
+                return;
+            }
+
+            API_CONFIG.whatsapp.apiUrl = apiUrl;
+            API_CONFIG.whatsapp.businessPhone = businessPhone;
+            saveApiConfig();
+
+            showAlert('WhatsApp API configuration saved!', 'success');
+        }
+
+        function showView(viewName) {
+            ['dashboardView', 'customerView', 'automationView', 'apiConfigView'].forEach(view => {
+                document.getElementById(view).classList.add('hidden');
+            });
+            document.getElementById(viewName).classList.remove('hidden');
+            
+            if (viewName === 'customerView') renderCustomers();
+            else if (viewName === 'automationView') { renderMessageTemplates(); renderTimedMessageStatus(); }
+            else if (viewName === 'apiConfigView') loadApiConfig();
+            else if (viewName === 'dashboardView') updateDashboard();
+        }
+
+        function showDashboard() { showView('dashboardView'); }
+        function showCustomerView() { showView('customerView'); }
+        function showAutomationView() { showView('automationView'); }
+        function showApiConfigView() { showView('apiConfigView'); }
+
+        function showCustomerFormModal(mode, customerId = null) {
+            const form = document.getElementById('customerForm');
+            form.reset();
+            
+            const isEdit = mode === 'edit' && customerId;
+            document.getElementById('customerFormTitle').textContent = isEdit ? 'Edit Customer' : 'Add New Customer';
+            document.getElementById('editCustomerId').value = isEdit ? customerId : '';
+            
+            if (isEdit) {
+                const customer = customers.find(c => c.id === customerId);
+                if (customer) {
+                    document.getElementById('customerName').value = customer.name;
+                    document.getElementById('customerCompany').value = customer.company;
+                    document.getElementById('customerEmail').value = customer.email;
+                    document.getElementById('customerPhone').value = customer.phone || '';
+                    document.getElementById('customerStatus').value = customer.status;
+                }
+            }
+            
+            document.getElementById('customerFormModal').classList.remove('hidden');
+        }
+
+        function saveCustomer(e) {
+            e.preventDefault();
+            
+            const customerId = document.getElementById('editCustomerId').value;
+            const isEdit = !!customerId;
+            
+            const customerData = {
+                name: document.getElementById('customerName').value,
+                company: document.getElementById('customerCompany').value,
+                email: document.getElementById('customerEmail').value,
+                phone: document.getElementById('customerPhone').value,
+                status: document.getElementById('customerStatus').value,
+                createdAt: isEdit ? customers.find(c => c.id === customerId).createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (isEdit) {
+                const index = customers.findIndex(c => c.id === customerId);
+                customers[index] = { ...customers[index], ...customerData };
+                showAlert('Customer updated successfully!', 'success');
+            } else {
+                customerData.id = Date.now().toString();
+                customers.unshift(customerData);
+                showAlert('Customer added successfully!', 'success');
+            }
+            
+            saveData();
+            hideModal('customerFormModal');
+            renderCustomers();
+            updateDashboard();
+        }
+
+        function renderCustomers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filteredCustomers = customers.filter(customer => 
+                (customer.name.toLowerCase().includes(searchTerm) ||
+                 customer.company.toLowerCase().includes(searchTerm)) &&
+                (statusFilter === 'all' || customer.status === statusFilter)
+            );
+            
+            const customersList = document.getElementById('customersList');
+            
+            if (filteredCustomers.length === 0) {
+                customersList.innerHTML = '<div class="p-8 text-center text-gray-500">No customers found.</div>';
+                return;
+            }
+            
+            customersList.innerHTML = filteredCustomers.map(customer => {
+                const isSelected = selectedCustomerId === customer.id;
+                const statusColor = customer.status === 'customer' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
+                const selectedStyle = isSelected ? 'bg-purple-50 border-r-4 border-purple-500' : 'hover:bg-gray-50';
+                
+                return `
+                    <div class="p-4 ${selectedStyle} cursor-pointer transition" onclick="selectCustomer('${customer.id}')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${customer.name}</h4>
+                                <p class="text-sm text-gray-600">${customer.company}</p>
+                                <p class="text-xs text-gray-500">${customer.email}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full font-medium ${statusColor}">
+                                ${customer.status}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectCustomer(customerId) {
+            selectedCustomerId = customerId;
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) return;
+            
+            const customerMeetings = meetings.filter(m => m.customerId === customerId);
+            const customerInteractions = interactions.filter(i => i.customerId === customerId);
+            const statusColor = customer.status === 'customer' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
+            
+            document.getElementById('customerDetails').innerHTML = `
+                <div class="space-y-6">
+                    <div class="border-b pb-4 flex justify-between items-start">
+                        <div>
+                            <h4 class="font-extrabold text-2xl text-gray-900">${customer.name}</h4>
+                            <p class="text-gray-600 font-medium">${customer.company}</p>
+                            <span class="mt-2 inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusColor}">
+                                ${customer.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="showCustomerFormModal('edit', '${customer.id}')" class="text-purple-600 hover:text-purple-800">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="showConfirmDeleteModal('${customer.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <h5 class="font-semibold text-gray-700">Contact Information</h5>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-envelope text-gray-400 w-5 mr-3"></i>${customer.email}
+                        </div>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-phone text-gray-400 w-5 mr-3"></i>${customer.phone || 'N/A'}
+                        </div>
+                    </div>
+
+                    <button onclick="showLogInteractionModal('${customer.id}')" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl text-sm font-medium">
+                        <i class="fas fa-plus mr-2"></i>Log Interaction
+                    </button>
+
+                    <div class="border-t pt-4">
+                        <h5 class="font-bold text-lg mb-3">Meetings (${customerMeetings.length})</h5>
+                        <div class="space-y-3">
+                            ${customerMeetings.length > 0 ? customerMeetings.map(meeting => `
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="font-medium text-sm">${meeting.title}</p>
+                                    <p class="text-xs text-gray-600">${formatDate(meeting.date)} at ${formatTime(meeting.time)}</p>
+                                    <p class="text-xs text-gray-500">${meeting.location}</p>
+                                    ${!meeting.completed ? `
+                                        <button onclick="completeMeeting('${meeting.id}')" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded mt-2">
+                                            Mark Complete
+                                        </button>
+                                    ` : `
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mt-2 inline-block">
+                                            Completed
+                                        </span>
+                                    `}
+                                </div>
+                            `).join('') : '<p class="text-gray-500 text-sm">No meetings scheduled.</p>'}
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <h5 class="font-bold text-lg mb-3">Interactions (${customerInteractions.length})</h5>
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            ${customerInteractions.length > 0 ? customerInteractions.map(interaction => `
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <div class="flex justify-between items-center text-xs mb-1">
+                                        <span class="font-semibold text-gray-700">${interaction.type}</span>
+                                        <span class="text-gray-500">${formatDateTime(interaction.createdAt)}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">${interaction.notes}</p>
+                                </div>
+                            `).join('') : '<p class="text-gray-500 text-sm">No interactions yet.</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            renderCustomers();
+        }
+
+        function showConfirmDeleteModal(customerId) {
+            document.getElementById('customerToDeleteId').value = customerId;
+            document.getElementById('confirmDeleteModal').classList.remove('hidden');
+        }
+
+        function deleteCustomer() {
+            const customerId = document.getElementById('customerToDeleteId').value;
+            customers = customers.filter(c => c.id !== customerId);
+            meetings = meetings.filter(m => m.customerId !== customerId);
+            interactions = interactions.filter(i => i.customerId !== customerId);
+            
+            saveData();
+            showAlert('Customer deleted successfully!', 'success');
+            hideModal('confirmDeleteModal');
+            renderCustomers();
+            updateDashboard();
+            
+            document.getElementById('customerDetails').innerHTML = `
+                <div class="text-center p-12">
+                    <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+                    <p class="text-green-500 font-medium">Customer deleted.</p>
+                </div>
+            `;
+        }
+
+        function showAddMeetingModal() {
+            const select = document.getElementById('meetingCustomer');
+            select.innerHTML = '<option value="">Select Customer</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name} - ${c.company}</option>`).join('');
+            
+            document.getElementById('meetingDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('addMeetingModal').classList.remove('hidden');
+        }
+
+        function addMeeting(e) {
+            e.preventDefault();
+            
+            const meetingData = {
+                id: Date.now().toString(),
+                customerId: document.getElementById('meetingCustomer').value,
+                title: document.getElementById('meetingTitle').value,
+                date: document.getElementById('meetingDate').value,
+                time: document.getElementById('meetingTime').value,
+                location: document.getElementById('meetingLocation').value || 'Not specified',
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            meetings.unshift(meetingData);
+            saveData();
+            showAlert('Meeting scheduled successfully!', 'success');
+            hideModal('addMeetingModal');
+            updateDashboard();
+            
+            if (selectedCustomerId === meetingData.customerId) {
+                selectCustomer(selectedCustomerId);
+            }
+        }
+
+        function completeMeeting(meetingId) {
+            const meeting = meetings.find(m => m.id === meetingId);
+            if (meeting) {
+                meeting.completed = true;
+                meeting.endTime = new Date().toISOString();
+                saveData();
+                showAlert('Meeting marked as complete!', 'success');
+                if (selectedCustomerId === meeting.customerId) {
+                    selectCustomer(selectedCustomerId);
+                }
+            }
+        }
+
+        function showLogInteractionModal(customerId) {
+            document.getElementById('interactionCustomerId').value = customerId;
+            document.getElementById('interactionForm').reset();
+            document.getElementById('logInteractionModal').classList.remove('hidden');
+        }
+
+        function logInteraction(e) {
+            e.preventDefault();
+            
+            const interactionData = {
+                id: Date.now().toString(),
+                customerId: document.getElementById('interactionCustomerId').value,
+                type: document.getElementById('interactionType').value,
+                notes: document.getElementById('interactionNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            interactions.unshift(interactionData);
+            saveData();
+            showAlert('Interaction logged successfully!', 'success');
+            hideModal('logInteractionModal');
+            
+            if (selectedCustomerId === interactionData.customerId) {
+                selectCustomer(selectedCustomerId);
+            }
+        }
+
+        function showTemplateFormModal(mode, templateId = null) {
+            const form = document.getElementById('templateForm');
+            form.reset();
+            
+            const isEdit = mode === 'edit' && templateId;
+            document.getElementById('templateFormTitle').textContent = isEdit ? 'Edit Template' : 'New Template';
+            document.getElementById('editTemplateId').value = isEdit ? templateId : '';
+            
+            if (isEdit) {
+                const template = messageTemplates.find(t => t.id === templateId);
+                if (template) {
+                    document.getElementById('templateName').value = template.name;
+                    document.getElementById('templateDelayAmount').value = template.delayAmount;
+                    document.getElementById('templateDelayUnit').value = template.delayUnit;
+                    document.getElementById('templateContent').value = template.content;
+                }
+            }
+            
+            document.getElementById('templateFormModal').classList.remove('hidden');
+        }
+
+        function saveMessageTemplate(e) {
+            e.preventDefault();
+            
+            const templateId = document.getElementById('editTemplateId').value;
+            const isEdit = !!templateId;
+            
+            const templateData = {
+                name: document.getElementById('templateName').value,
+                delayAmount: parseInt(document.getElementById('templateDelayAmount').value),
+                delayUnit: document.getElementById('templateDelayUnit').value,
+                content: document.getElementById('templateContent').value,
+                updatedAt: new Date().toISOString(),
+                active: true
+            };
+            
+            if (isEdit) {
+                const index = messageTemplates.findIndex(t => t.id === templateId);
+                messageTemplates[index] = { ...messageTemplates[index], ...templateData };
+                showAlert('Template updated successfully!', 'success');
+            } else {
+                templateData.id = Date.now().toString();
+                templateData.createdAt = new Date().toISOString();
+                messageTemplates.unshift(templateData);
+                showAlert('Template created successfully!', 'success');
+            }
+            
+            saveData();
+            hideModal('templateFormModal');
+            renderMessageTemplates();
+        }
+
+        function renderMessageTemplates() {
+            const list = document.getElementById('messageTemplatesList');
+            
+            if (messageTemplates.length === 0) {
+                list.innerHTML = '<p class="p-6 text-center text-gray-400">No templates found.</p>';
+                return;
+            }
+            
+            list.innerHTML = messageTemplates.map(template => `
+                <div class="p-4 flex justify-between items-center hover:bg-gray-50">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">${template.name}</h4>
+                        <p class="text-xs text-teal-600 font-medium">Sends ${template.delayAmount} ${template.delayUnit} after meeting</p>
+                        <p class="text-sm text-gray-600 mt-1">${template.content}</p>
+                    </div>
+                    <div class="space-x-2">
+                        <button onclick="showTemplateFormModal('edit', '${template.id}')" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteMessageTemplate('${template.id}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteMessageTemplate(templateId) {
+            if (confirm('Delete this template?')) {
+                messageTemplates = messageTemplates.filter(t => t.id !== templateId);
+                saveData();
+                showAlert('Template deleted!', 'success');
+                renderMessageTemplates();
+            }
+        }
+
+        function renderTimedMessageStatus() {
+            const container = document.getElementById('timedMessageStatus');
+            const completedMeetings = meetings.filter(m => m.completed).slice(0, 3);
+            
+            if (completedMeetings.length === 0 || messageTemplates.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-400">Complete meetings to see scheduled messages.</p>';
+                return;
+            }
+            
+            container.innerHTML = completedMeetings.map(meeting => {
+                const customer = customers.find(c => c.id === meeting.customerId);
+                if (!customer) return '';
+                
+                return `
+                    <div class="bg-gray-50 p-4 rounded-xl border">
+                        <p class="font-bold text-purple-700">${meeting.title}</p>
+                        <p class="text-xs text-gray-500 mb-3">With ${customer.name}</p>
+                        ${messageTemplates.map(template => `
+                            <div class="flex justify-between items-center py-2 border-b">
+                                <span class="text-sm font-medium">${template.name}</span>
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Ready</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateDashboard() {
+            const statsGrid = document.getElementById('statsGrid');
+            const today = new Date().toISOString().split('T')[0];
+            const todaysMeetings = meetings.filter(m => m.date === today && !m.completed);
+            const activeDeals = customers.filter(c => c.status === 'prospect').length;
+            
+            statsGrid.innerHTML = `
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-blue-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-users text-blue-600 text-3xl p-3 bg-blue-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Total Customers</p>
+                            <p class="text-3xl font-bold text-gray-900">${customers.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-purple-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-day text-purple-600 text-3xl p-3 bg-purple-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Today's Meetings</p>
+                            <p class="text-3xl font-bold text-gray-900">${todaysMeetings.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-orange-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-chart-line text-orange-600 text-3xl p-3 bg-orange-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Open Prospects</p>
+                            <p class="text-3xl font-bold text-gray-900">${activeDeals}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-green-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-phone-volume text-green-600 text-3xl p-3 bg-green-100 rounded-full"></i>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Total Interactions</p>
+                            <p class="text-3xl font-bold text-gray-900">${interactions.length}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const recentCustomers = customers.slice(0, 4);
+            document.getElementById('recentCustomersList').innerHTML = recentCustomers.length ? 
+                recentCustomers.map(c => `
+                    <div class="flex items-center justify-between py-3 border-b">
+                        <div>
+                            <p class="font-medium text-gray-800">${c.name}</p>
+                            <p class="text-sm text-gray-600">${c.company}</p>
+                        </div>
+                        <span class="px-3 py-1 text-xs rounded-full ${c.status === 'customer' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                            ${c.status}
+                        </span>
+                    </div>
+                `).join('') : '<p class="text-gray-500 text-center py-4">No customers yet</p>';
+            
+            document.getElementById('todaysMeetingsList').innerHTML = todaysMeetings.length ?
+                todaysMeetings.map(meeting => {
+                    const customer = customers.find(c => c.id === meeting.customerId);
+                    return `
+                        <div class="py-3 border-b">
+                            <p class="font-medium text-gray-800">${meeting.title}</p>
+                            <p class="text-sm text-purple-600">${customer?.name || 'Unknown'}</p>
+                            <p class="text-xs text-gray-600">${formatTime(meeting.time)} at ${meeting.location}</p>
+                        </div>
+                    `;
+                }).join('') : '<p class="text-gray-500 text-center py-4">No meetings today</p>';
+        }
+
+        function initializeEventListeners() {
+            document.getElementById('customerForm').addEventListener('submit', saveCustomer);
+            document.getElementById('meetingForm').addEventListener('submit', addMeeting);
+            document.getElementById('interactionForm').addEventListener('submit', logInteraction);
+            document.getElementById('templateForm').addEventListener('submit', saveMessageTemplate);
+            document.getElementById('searchInput').addEventListener('input', renderCustomers);
+            document.getElementById('statusFilter').addEventListener('change', renderCustomers);
+        }
+
+        function initializeCRMApp() {
+            loadApiConfig();
+            initializeEventListeners();
+            updateDashboard();
+            showDashboard();
+            
+            if (customers.length === 0) {
+                customers = [
+                    {
+                        id: '1',
+                        name: 'John Smith',
+                        company: 'Acme Corp',
+                        email: 'john@acme.com',
+                        phone: '+15551234567',
+                        status: 'prospect',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        name: 'Sarah Johnson',
+                        company: 'Tech Solutions Inc',
+                        email: 'sarah@techsolutions.com',
+                        phone: '+15559876543',
+                        status: 'customer',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                saveData();
+            }
+
+            if (messageTemplates.length === 0) {
+                messageTemplates = [
+                    {
+                        id: '1',
+                        name: 'Immediate Follow-up',
+                        delayAmount: 5,
+                        delayUnit: 'minutes',
+                        content: 'Hi {{CustomerName}}, thank you for the meeting today!',
+                        createdAt: new Date().toISOString(),
+                        active: true
+                    }
+                ];
+                saveData();
+            }
+        }
     </script>
 </body>
 </html>
