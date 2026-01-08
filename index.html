@@ -6,6 +6,9 @@
     <title>Business CRM - Pro Version</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -27,7 +30,6 @@
 </head>
 <body class="bg-gray-50">
     
-    <!-- ==================== AUTHENTICATION SCREEN ==================== -->
     <div id="authScreen" class="auth-container">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
             <div class="text-center mb-8">
@@ -38,7 +40,6 @@
 
             <div id="authMessage" class="hidden mb-4 p-3 rounded-lg"></div>
 
-            <!-- Sign In Form -->
             <div id="signInForm">
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Email</label>
@@ -71,7 +72,6 @@
                 </p>
             </div>
 
-            <!-- Sign Up Form -->
             <div id="signUpForm" class="hidden">
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Email</label>
@@ -97,16 +97,14 @@
         </div>
     </div>
 
-    <!-- ==================== MAIN CRM APPLICATION ==================== -->
     <div id="mainApp" class="hidden min-h-screen">
-    <!-- API Configuration Warning Banner -->
     <div id="apiWarningBanner" class="bg-yellow-50 border-b border-yellow-200">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-triangle text-yellow-600 mr-3"></i>
                     <p class="text-yellow-800 text-sm">
-                        <strong>API Configuration Required:</strong> Email and WhatsApp automation require backend setup. 
+                        <strong>Configuration Required:</strong> Connect EmailJS to enable automatic emails.
                         <button onclick="showApiConfigView()" class="underline ml-1 font-medium">Configure Now</button>
                     </p>
                 </div>
@@ -117,14 +115,13 @@
         </div>
     </div>
 
-    <!-- Navigation -->
     <nav class="bg-white shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-4">
                     <i class="fas fa-cubes text-purple-600 text-2xl"></i>
                     <h1 class="text-2xl font-bold text-gray-800">Pro CRM</h1>
-                    <span id="apiStatus" class="text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">APIs Not Configured</span>
+                    <span id="apiStatus" class="text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Setup Required</span>
                 </div>
                 <div class="flex space-x-4 items-center">
                     <span id="userEmail" class="text-sm text-gray-600 font-medium"></span>
@@ -138,7 +135,7 @@
                         <i class="fas fa-robot mr-2"></i>Automations
                     </button>
                     <button onclick="showApiConfigView()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
-                        <i class="fas fa-cog mr-2"></i>API Config
+                        <i class="fas fa-cog mr-2"></i>Config
                     </button>
                     <button onclick="signOutUser()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium shadow-md transition duration-150 ease-in-out">
                         <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
@@ -148,21 +145,18 @@
         </div>
     </nav>
 
-    <!-- Main Content Area -->
     <main class="min-h-[85vh]">
-        <!-- Dashboard View -->
         <div id="dashboardView" class="max-w-7xl mx-auto px-4 py-8">
             <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Dashboard Overview</h2>
             
-            <!-- API Status Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div id="emailStatusCard" class="api-warning bg-white p-6 rounded-xl shadow-lg">
                     <div class="flex items-center">
-                        <i class="fas fa-envelope text-yellow-600 text-3xl p-3 bg-yellow-100 rounded-full"></i>
+                        <i class="fas fa-paper-plane text-yellow-600 text-3xl p-3 bg-yellow-100 rounded-full"></i>
                         <div class="ml-4">
-                            <p class="text-sm text-gray-600">Email API</p>
-                            <p class="text-lg font-bold text-yellow-700">Not Configured</p>
-                            <p class="text-xs text-yellow-600 mt-1">Setup required for automation</p>
+                            <p class="text-sm text-gray-600">Email Automation</p>
+                            <p class="text-lg font-bold text-yellow-700">Not Connected</p>
+                            <p class="text-xs text-yellow-600 mt-1">Via EmailJS</p>
                         </div>
                     </div>
                 </div>
@@ -172,7 +166,7 @@
                         <div class="ml-4">
                             <p class="text-sm text-gray-600">WhatsApp API</p>
                             <p class="text-lg font-bold text-yellow-700">Not Configured</p>
-                            <p class="text-xs text-yellow-600 mt-1">Setup required for automation</p>
+                            <p class="text-xs text-yellow-600 mt-1">Requires Backend</p>
                         </div>
                     </div>
                 </div>
@@ -188,10 +182,8 @@
                 </div>
             </div>
 
-            <!-- Stats Grid -->
             <div id="statsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Stats will be populated here -->
-            </div>
+                </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-white p-6 rounded-xl shadow-lg">
@@ -209,7 +201,6 @@
             </div>
         </div>
 
-        <!-- Customer Management View -->
         <div id="customerView" class="max-w-7xl mx-auto px-4 py-8 hidden">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center space-x-4">
@@ -223,7 +214,6 @@
                 </button>
             </div>
 
-            <!-- Search and Filter -->
             <div class="bg-white p-4 rounded-xl shadow-lg mb-6">
                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                     <div class="flex-1">
@@ -260,7 +250,6 @@
             </div>
         </div>
 
-        <!-- Automation Management View -->
         <div id="automationView" class="max-w-7xl mx-auto px-4 py-8 hidden">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center space-x-4">
@@ -294,58 +283,55 @@
             </div>
         </div>
 
-        <!-- API Configuration View -->
         <div id="apiConfigView" class="max-w-4xl mx-auto px-4 py-8 hidden">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center space-x-4">
                     <button onclick="showDashboard()" class="text-orange-600 hover:text-orange-800 font-medium flex items-center transition duration-150">
                         <i class="fas fa-arrow-left mr-2"></i>Dashboard
                     </button>
-                    <h2 class="text-3xl font-bold text-gray-800">API Configuration</h2>
+                    <h2 class="text-3xl font-bold text-gray-800">Configuration</h2>
                 </div>
             </div>
 
             <div class="space-y-6">
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h3 class="text-xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-envelope text-blue-600 mr-3"></i>
-                        Email API Configuration
+                        <i class="fas fa-paper-plane text-blue-600 mr-3"></i>
+                        EmailJS Configuration
                     </h3>
                     
-                    <div class="api-warning bg-yellow-50 p-4 rounded-lg mb-4">
-                        <div class="flex items-start">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
-                            <div>
-                                <p class="font-medium text-yellow-800">Backend Required</p>
-                                <p class="text-sm text-yellow-700 mt-1">
-                                    Email automation requires a backend server with email service integration.
-                                </p>
-                            </div>
-                        </div>
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4 text-sm text-blue-800">
+                        <p><strong>Setup Instructions:</strong> Sign up at <a href="https://www.emailjs.com" target="_blank" class="underline font-bold">EmailJS.com</a>. Create a Service (Gmail) and a Template, then paste the IDs below. This allows you to send emails directly from the browser.</p>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Backend API URL</label>
-                            <input type="url" id="emailApiUrl" placeholder="https://your-backend.com/api/send-email" 
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Public Key</label>
+                            <input type="text" id="emailPublicKey" placeholder="e.g., user_XyZ123..." 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">From Email</label>
-                                <input type="email" id="fromEmail" placeholder="noreply@yourbusiness.com" 
-                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Service ID</label>
+                                <input type="text" id="emailServiceId" placeholder="e.g., service_xyz" 
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">From Name</label>
-                                <input type="text" id="fromName" placeholder="Your Business Name" 
-                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Template ID</label>
+                                <input type="text" id="emailTemplateId" placeholder="e.g., template_abc" 
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Your Name (for signature)</label>
+                            <input type="text" id="emailFromName" placeholder="John Doe" 
+                                   class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
 
-                        <button onclick="testEmailAPI()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
-                            <i class="fas fa-flask mr-2"></i>Test Email API
+                        <button onclick="saveEmailConfig()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-150">
+                            <i class="fas fa-save mr-2"></i>Save & Connect EmailJS
                         </button>
                     </div>
                 </div>
@@ -362,7 +348,7 @@
                             <div>
                                 <p class="font-medium text-yellow-800">Backend Required</p>
                                 <p class="text-sm text-yellow-700 mt-1">
-                                    WhatsApp automation requires a backend server with WhatsApp Business API integration.
+                                    WhatsApp automation requires a backend server. This feature is currently a placeholder.
                                 </p>
                             </div>
                         </div>
@@ -391,7 +377,6 @@
     </main>
     </div>
 
-    <!-- Customer Form Modal -->
     <div id="customerFormModal" class="modal fixed inset-0 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
@@ -417,7 +402,6 @@
         </div>
     </div>
 
-    <!-- Template Form Modal -->
     <div id="templateFormModal" class="modal fixed inset-0 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
@@ -453,7 +437,6 @@
         </div>
     </div>
 
-    <!-- Add Meeting Modal -->
     <div id="addMeetingModal" class="modal fixed inset-0 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
@@ -480,7 +463,6 @@
         </div>
     </div>
 
-    <!-- Log Interaction Modal -->
     <div id="logInteractionModal" class="modal fixed inset-0 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-md w-full p-8 shadow-2xl">
@@ -507,7 +489,6 @@
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
     <div id="confirmDeleteModal" class="modal fixed inset-0 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl max-w-sm w-full p-8 shadow-2xl">
@@ -523,10 +504,8 @@
         </div>
     </div>
 
-    <!-- Alerts -->
     <div id="alertsContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-    <!-- Firebase Authentication -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -677,7 +656,6 @@
         });
     </script>
 
-    <!-- CRM Application Logic -->
     <script>
         let customers = JSON.parse(localStorage.getItem('crm_customers')) || [];
         let meetings = JSON.parse(localStorage.getItem('crm_meetings')) || [];
@@ -685,8 +663,15 @@
         let messageTemplates = JSON.parse(localStorage.getItem('crm_templates')) || [];
         let selectedCustomerId = null;
 
+        // UPDATED API_CONFIG for EmailJS
         const API_CONFIG = {
-            email: { enabled: false, apiUrl: '', fromEmail: '', fromName: '' },
+            email: { 
+                enabled: false, 
+                publicKey: '', 
+                serviceId: '', 
+                templateId: '', 
+                fromName: '' 
+            },
             whatsapp: { enabled: false, apiUrl: '', businessPhone: '' }
         };
 
@@ -746,7 +731,11 @@
         function loadApiConfig() {
             const savedConfig = localStorage.getItem('crm_api_config');
             if (savedConfig) {
-                Object.assign(API_CONFIG, JSON.parse(savedConfig));
+                // Merge saved config ensuring structure validity
+                const parsed = JSON.parse(savedConfig);
+                if(parsed.email) Object.assign(API_CONFIG.email, parsed.email);
+                if(parsed.whatsapp) Object.assign(API_CONFIG.whatsapp, parsed.whatsapp);
+                
                 updateApiConfigUI();
                 updateApiStatusUI();
             }
@@ -759,13 +748,17 @@
         }
 
         function updateApiConfigUI() {
-            document.getElementById('emailApiUrl').value = API_CONFIG.email.apiUrl || '';
-            document.getElementById('fromEmail').value = API_CONFIG.email.fromEmail || '';
-            document.getElementById('fromName').value = API_CONFIG.email.fromName || '';
+            // Updated for EmailJS fields
+            document.getElementById('emailPublicKey').value = API_CONFIG.email.publicKey || '';
+            document.getElementById('emailServiceId').value = API_CONFIG.email.serviceId || '';
+            document.getElementById('emailTemplateId').value = API_CONFIG.email.templateId || '';
+            document.getElementById('emailFromName').value = API_CONFIG.email.fromName || '';
+            
+            // Check enablement based on keys presence
+            API_CONFIG.email.enabled = !!(API_CONFIG.email.publicKey && API_CONFIG.email.serviceId && API_CONFIG.email.templateId);
+
             document.getElementById('whatsappApiUrl').value = API_CONFIG.whatsapp.apiUrl || '';
             document.getElementById('businessPhone').value = API_CONFIG.whatsapp.businessPhone || '';
-            
-            API_CONFIG.email.enabled = !!(API_CONFIG.email.apiUrl && API_CONFIG.email.fromEmail);
             API_CONFIG.whatsapp.enabled = !!(API_CONFIG.whatsapp.apiUrl && API_CONFIG.whatsapp.businessPhone);
         }
 
@@ -776,9 +769,10 @@
 
             if (API_CONFIG.email.enabled) {
                 emailCard.className = 'bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500';
-                emailCard.querySelector('i').className = 'fas fa-envelope text-green-600 text-3xl p-3 bg-green-100 rounded-full';
-                emailCard.querySelector('.text-lg').textContent = 'Configured';
+                emailCard.querySelector('i').className = 'fas fa-paper-plane text-green-600 text-3xl p-3 bg-green-100 rounded-full';
+                emailCard.querySelector('.text-lg').textContent = 'Connected';
                 emailCard.querySelector('.text-lg').className = 'text-lg font-bold text-green-700';
+                emailCard.querySelector('.text-xs').textContent = 'Ready to send';
             }
 
             if (API_CONFIG.whatsapp.enabled) {
@@ -789,34 +783,117 @@
             }
 
             if (API_CONFIG.email.enabled && API_CONFIG.whatsapp.enabled) {
-                apiStatus.textContent = 'APIs Configured';
+                apiStatus.textContent = 'System Ready';
                 apiStatus.className = 'text-xs ml-4 px-2 py-1 rounded-full bg-green-100 text-green-800';
             } else if (API_CONFIG.email.enabled || API_CONFIG.whatsapp.enabled) {
-                apiStatus.textContent = 'Partial APIs';
+                apiStatus.textContent = 'Partial Setup';
                 apiStatus.className = 'text-xs ml-4 px-2 py-1 rounded-full bg-yellow-100 text-yellow-800';
             }
+            
+            if (API_CONFIG.email.enabled) hideApiWarning();
         }
 
         function hideApiWarning() {
             document.getElementById('apiWarningBanner').style.display = 'none';
         }
 
-        async function testEmailAPI() {
-            const apiUrl = document.getElementById('emailApiUrl').value;
-            const fromEmail = document.getElementById('fromEmail').value;
-            const fromName = document.getElementById('fromName').value;
+        // NEW FUNCTION: Save EmailJS Configuration
+        function saveEmailConfig() {
+            const publicKey = document.getElementById('emailPublicKey').value;
+            const serviceId = document.getElementById('emailServiceId').value;
+            const templateId = document.getElementById('emailTemplateId').value;
+            const fromName = document.getElementById('emailFromName').value;
 
-            if (!apiUrl || !fromEmail) {
-                showAlert('Please fill in all required email fields', 'error');
+            if (!publicKey || !serviceId || !templateId) {
+                showAlert('Please fill in all EmailJS fields', 'error');
                 return;
             }
 
-            API_CONFIG.email.apiUrl = apiUrl;
-            API_CONFIG.email.fromEmail = fromEmail;
-            API_CONFIG.email.fromName = fromName;
-            saveApiConfig();
+            // Initialize EmailJS immediately to test
+            try {
+                emailjs.init({ publicKey: publicKey });
+                
+                API_CONFIG.email = { 
+                    enabled: true, 
+                    publicKey, 
+                    serviceId, 
+                    templateId,
+                    fromName 
+                };
+                
+                saveApiConfig();
+                showAlert('EmailJS Connected Successfully!', 'success');
+            } catch (error) {
+                console.error(error);
+                showAlert('Failed to initialize EmailJS', 'error');
+            }
+        }
 
-            showAlert('Email API configuration saved!', 'success');
+        // NEW FUNCTION: Send email via EmailJS
+        function sendAutomatedEmail(customer, meeting, template) {
+            if (!API_CONFIG.email.enabled) {
+                console.log('Email automation skipped: API not configured');
+                return;
+            }
+
+            // Ensure initialization
+            emailjs.init({ publicKey: API_CONFIG.email.publicKey });
+
+            const templateParams = {
+                CustomerName: customer.name,
+                CompanyName: customer.company,
+                MeetingTitle: meeting.title,
+                CustomMessage: template.content,
+                MyName: API_CONFIG.email.fromName || 'The Team',
+                to_email: customer.email,
+                to_name: customer.name
+            };
+
+            console.log(`Attempting to send email to ${customer.email}...`);
+
+            emailjs.send(API_CONFIG.email.serviceId, API_CONFIG.email.templateId, templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showAlert(`Auto-Email sent to ${customer.name}!`, 'success');
+                    
+                    // Log this as an interaction automatically
+                    interactions.unshift({
+                        id: Date.now().toString(),
+                        customerId: customer.id,
+                        type: 'Email (Automated)',
+                        notes: `Sent template: ${template.name}`,
+                        createdAt: new Date().toISOString()
+                    });
+                    saveData();
+                    if(selectedCustomerId === customer.id) selectCustomer(customer.id);
+                    
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    showAlert(`Failed to send email: ${error.text}`, 'error');
+                });
+        }
+
+        // NEW FUNCTION: Process automations
+        function processMeetingAutomations(meeting) {
+            const customer = customers.find(c => c.id === meeting.customerId);
+            if (!customer) return;
+
+            const activeTemplates = messageTemplates.filter(t => t.active);
+            if (activeTemplates.length === 0) return;
+
+            activeTemplates.forEach(template => {
+                let delayMs = 0;
+                const amount = parseInt(template.delayAmount);
+                if (template.delayUnit === 'minutes') delayMs = amount * 60 * 1000;
+                if (template.delayUnit === 'hours') delayMs = amount * 60 * 60 * 1000;
+                if (template.delayUnit === 'days') delayMs = amount * 24 * 60 * 60 * 1000;
+
+                showAlert(`Email scheduled in ${amount} ${template.delayUnit}...`, 'info');
+
+                setTimeout(() => {
+                    sendAutomatedEmail(customer, meeting, template);
+                }, delayMs);
+            });
         }
 
         async function testWhatsAppAPI() {
@@ -1095,8 +1172,21 @@
                 meeting.endTime = new Date().toISOString();
                 saveData();
                 showAlert('Meeting marked as complete!', 'success');
+                
+                // TRIGGER AUTOMATION
+                if (API_CONFIG.email.enabled) {
+                    processMeetingAutomations(meeting);
+                } else {
+                    showAlert('Tip: Configure Email API to enable auto-followups', 'warning');
+                }
+
                 if (selectedCustomerId === meeting.customerId) {
                     selectCustomer(selectedCustomerId);
+                }
+                
+                updateDashboard();
+                if(!document.getElementById('automationView').classList.contains('hidden')){
+                     renderTimedMessageStatus();
                 }
             }
         }
@@ -1236,7 +1326,7 @@
                         ${messageTemplates.map(template => `
                             <div class="flex justify-between items-center py-2 border-b">
                                 <span class="text-sm font-medium">${template.name}</span>
-                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Ready</span>
+                                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Automation Queued</span>
                             </div>
                         `).join('')}
                     </div>
